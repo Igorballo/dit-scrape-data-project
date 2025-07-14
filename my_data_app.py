@@ -9,6 +9,17 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 import json
+from selenium import webdriver 
+from selenium.webdriver.common.by import By 
+
+
+# Instantier l'objet chrome options
+options = webdriver.ChromeOptions() 
+# définir l'option d'utiliser chrome en mode headless ( utiliser afin de lancer le script en background)
+options.add_argument("--headless=new") 
+# initialiser l'instance de chrome driver en mode headless
+driver = webdriver.Chrome(options=options)
+
 
 # Configuration de la page
 st.set_page_config(
@@ -113,8 +124,77 @@ def scrape_motos_data(url, max_pages=5):
             except Exception as e:
                 st.error(f"Erreur lors du scraping de la page {page}: {str(e)}")
                 break
-    
+
     return pd.DataFrame(scraped_data)
+
+def scrape_voitures_data(url, max_pages):
+    """Fonction de scraping pour les données de voitures"""
+    scraped_data = []
+    
+    print(f"Scraping voitures: {url}")
+    with st.spinner(f'Scraping voitures en cours... Veuillez patienter...'):
+        for page in range(1, max_pages + 1):
+            try:
+                # Simulation de scraping pour voitures
+                page_url = f"{url}?page={page}"
+                
+                # Simulation de données scrapées
+                for i in range(10):
+                    scraped_data.append({
+                        'Titre': f'Voiture {page}-{i+1}',
+                        'Prix': f'{2000000 + (page * 50000) + (i * 25000)} FCFA',
+                        'Marque': f'Marque {i % 8 + 1}',
+                        'Année': f'{2010 + (i % 12)}',
+                        'Kilométrage': f'{50000 + (i * 10000)} km',
+                        'Localisation': 'Dakar',
+                        'Date_Scraping': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    })
+                
+                # Barre de progression
+                progress = page / max_pages
+                st.progress(progress)
+                time.sleep(0.5)  # Simulation du temps de scraping
+                
+            except Exception as e:
+                st.error(f"Erreur lors du scraping de la page {page}: {str(e)}")
+                break
+
+    return pd.DataFrame(scraped_data)
+
+def scrape_location_data(url, max_pages):
+    """Fonction de scraping pour les données de location de voitures"""
+    scraped_data = []
+    
+    print(f"Scraping location: {url}")
+    with st.spinner(f'Scraping location en cours... Veuillez patienter...'):
+        for page in range(1, max_pages + 1):
+            try:
+                # Simulation de scraping pour location
+                page_url = f"{url}?page={page}"
+                
+                # Simulation de données scrapées
+                for i in range(10):
+                    scraped_data.append({
+                        'Titre': f'Location {page}-{i+1}',
+                        'Prix': f'{15000 + (page * 1000) + (i * 500)} FCFA/jour',
+                        'Marque': f'Marque {i % 6 + 1}',
+                        'Année': f'{2015 + (i % 8)}',
+                        'Kilométrage': f'{80000 + (i * 15000)} km',
+                        'Localisation': 'Dakar',
+                        'Date_Scraping': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    })
+                
+                # Barre de progression
+                progress = page / max_pages
+                st.progress(progress)
+                time.sleep(0.5)  # Simulation du temps de scraping
+                
+            except Exception as e:
+                st.error(f"Erreur lors du scraping de la page {page}: {str(e)}")
+                break
+
+    return pd.DataFrame(scraped_data)
+
 
 # Fonction pour nettoyer les données
 def clean_data(dataframe):
@@ -239,19 +319,30 @@ def show_scraping():
     </div>
     """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 2])
     
     with col1:
         st.subheader("Configuration")
-        url = st.text_input("URL de base", value="https://www.expat-dakar.com/motos-scooters")
-        max_pages = st.slider("Nombre de pages à scraper", 1, 10, 3)
+        url = st.selectbox("URL de base", options=["https://dakar-auto.com/senegal/voitures-4", "https://dakar-auto.com/senegal/motos-and-scooters-3", "https://dakar-auto.com/senegal/location-de-voitures-19"], index=0)
+        
+        max_pages = st.number_input("Nombre de pages à scraper", value=1, min_value=1, step=1)
         
         if st.button("🚀 Lancer le Scraping", key="scrape_btn"):
-            if url:
+            print(f"Scraping igor: {url}")
+            if url and url == 'https://dakar-auto.com/senegal/voitures-4':
+                print(f"Scraping igor v2: {url}")
+                scraped_df = scrape_voitures_data(url, max_pages)
+                st.session_state.scraped_data = scraped_df
+                st.success(f"✅ Scraping terminé ! {len(scraped_df)} données collectées.")
+            elif url and url == 'https://dakar-auto.com/senegal/motos-and-scooters-3':
                 scraped_df = scrape_motos_data(url, max_pages)
                 st.session_state.scraped_data = scraped_df
                 st.success(f"✅ Scraping terminé ! {len(scraped_df)} données collectées.")
+            elif url and url == 'https://dakar-auto.com/senegal/location-de-voitures-19':
+                scraped_df = scrape_location_data(url, max_pages)
+                st.session_state.scraped_data = scraped_df
             else:
+                print(f"Scraping igor v3: {url}")
                 st.error("Veuillez entrer une URL valide.")
     
     with col2:
