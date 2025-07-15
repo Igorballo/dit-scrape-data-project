@@ -9,16 +9,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 import json
-from selenium import webdriver 
-from selenium.webdriver.common.by import By 
-
-
-# Instantier l'objet chrome options
-options = webdriver.ChromeOptions() 
-# définir l'option d'utiliser chrome en mode headless ( utiliser afin de lancer le script en background)
-options.add_argument("--headless=new") 
-# initialiser l'instance de chrome driver en mode headless
-driver = webdriver.Chrome(options=options)
+from scraping_functions import scrape_motos_data, scrape_voitures_data, scrape_location_data
 
 
 # Configuration de la page
@@ -82,7 +73,7 @@ st.markdown("""
 
 # Initialisation des variables de session
 if 'scraped_data' not in st.session_state:
-    st.session_state.scraped_data = []
+    st.session_state.scraped_data = pd.DataFrame()
 if 'current_page' not in st.session_state:
     st.session_state.current_page = "Accueil"
 
@@ -93,107 +84,7 @@ def download_csv(dataframe, filename):
     href = f'<a href="data:file/csv;base64,{b64}" download="{filename}.csv" class="download-link">📥 Télécharger {filename}</a>'
     return href
 
-# Fonction de scraping (exemple pour motos)
-def scrape_motos_data(url, max_pages=5):
-    """Fonction de scraping pour les données de motos"""
-    scraped_data = []
-    
-    with st.spinner(f'Scraping en cours... Veuillez patienter...'):
-        for page in range(1, max_pages + 1):
-            try:
-                # Simulation de scraping (remplacez par votre logique réelle)
-                page_url = f"{url}?page={page}"
-                
-                # Simulation de données scrapées
-                for i in range(10):
-                    scraped_data.append({
-                        'Titre': f'Moto {page}-{i+1}',
-                        'Prix': f'{50000 + (page * 1000) + (i * 500)} FCFA',
-                        'Marque': f'Marque {i % 5 + 1}',
-                        'Année': f'{2015 + (i % 8)}',
-                        'Kilométrage': f'{10000 + (i * 5000)} km',
-                        'Localisation': 'Dakar',
-                        'Date_Scraping': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    })
-                
-                # Barre de progression
-                progress = page / max_pages
-                st.progress(progress)
-                time.sleep(0.5)  # Simulation du temps de scraping
-                
-            except Exception as e:
-                st.error(f"Erreur lors du scraping de la page {page}: {str(e)}")
-                break
 
-    return pd.DataFrame(scraped_data)
-
-def scrape_voitures_data(url, max_pages):
-    """Fonction de scraping pour les données de voitures"""
-    scraped_data = []
-    
-    print(f"Scraping voitures: {url}")
-    with st.spinner(f'Scraping voitures en cours... Veuillez patienter...'):
-        for page in range(1, max_pages + 1):
-            try:
-                # Simulation de scraping pour voitures
-                page_url = f"{url}?page={page}"
-                
-                # Simulation de données scrapées
-                for i in range(10):
-                    scraped_data.append({
-                        'Titre': f'Voiture {page}-{i+1}',
-                        'Prix': f'{2000000 + (page * 50000) + (i * 25000)} FCFA',
-                        'Marque': f'Marque {i % 8 + 1}',
-                        'Année': f'{2010 + (i % 12)}',
-                        'Kilométrage': f'{50000 + (i * 10000)} km',
-                        'Localisation': 'Dakar',
-                        'Date_Scraping': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    })
-                
-                # Barre de progression
-                progress = page / max_pages
-                st.progress(progress)
-                time.sleep(0.5)  # Simulation du temps de scraping
-                
-            except Exception as e:
-                st.error(f"Erreur lors du scraping de la page {page}: {str(e)}")
-                break
-
-    return pd.DataFrame(scraped_data)
-
-def scrape_location_data(url, max_pages):
-    """Fonction de scraping pour les données de location de voitures"""
-    scraped_data = []
-    
-    print(f"Scraping location: {url}")
-    with st.spinner(f'Scraping location en cours... Veuillez patienter...'):
-        for page in range(1, max_pages + 1):
-            try:
-                # Simulation de scraping pour location
-                page_url = f"{url}?page={page}"
-                
-                # Simulation de données scrapées
-                for i in range(10):
-                    scraped_data.append({
-                        'Titre': f'Location {page}-{i+1}',
-                        'Prix': f'{15000 + (page * 1000) + (i * 500)} FCFA/jour',
-                        'Marque': f'Marque {i % 6 + 1}',
-                        'Année': f'{2015 + (i % 8)}',
-                        'Kilométrage': f'{80000 + (i * 15000)} km',
-                        'Localisation': 'Dakar',
-                        'Date_Scraping': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    })
-                
-                # Barre de progression
-                progress = page / max_pages
-                st.progress(progress)
-                time.sleep(0.5)  # Simulation du temps de scraping
-                
-            except Exception as e:
-                st.error(f"Erreur lors du scraping de la page {page}: {str(e)}")
-                break
-
-    return pd.DataFrame(scraped_data)
 
 
 # Fonction pour nettoyer les données
@@ -328,27 +219,26 @@ def show_scraping():
         max_pages = st.number_input("Nombre de pages à scraper", value=1, min_value=1, step=1)
         
         if st.button("🚀 Lancer le Scraping", key="scrape_btn"):
-            print(f"Scraping igor: {url}")
             if url and url == 'https://dakar-auto.com/senegal/voitures-4':
-                print(f"Scraping igor v2: {url}")
-                scraped_df = scrape_voitures_data(url, max_pages)
+                scraped_df = scrape_voitures_data(max_pages)
                 st.session_state.scraped_data = scraped_df
-                st.success(f"✅ Scraping terminé ! {len(scraped_df)} données collectées.")
             elif url and url == 'https://dakar-auto.com/senegal/motos-and-scooters-3':
-                scraped_df = scrape_motos_data(url, max_pages)
+                scraped_df = scrape_motos_data(max_pages)
                 st.session_state.scraped_data = scraped_df
-                st.success(f"✅ Scraping terminé ! {len(scraped_df)} données collectées.")
             elif url and url == 'https://dakar-auto.com/senegal/location-de-voitures-19':
-                scraped_df = scrape_location_data(url, max_pages)
+                scraped_df = scrape_location_data(max_pages)
                 st.session_state.scraped_data = scraped_df
             else:
-                print(f"Scraping igor v3: {url}")
                 st.error("Veuillez entrer une URL valide.")
     
     with col2:
         st.subheader("Données Scrapées")
-        if st.session_state.scraped_data:
-            st.dataframe(st.session_state.scraped_data.head())
+        if hasattr(st.session_state, 'scraped_data') and not st.session_state.scraped_data.empty:
+            # Afficher toutes les données sans limite
+            st.dataframe(st.session_state.scraped_data, use_container_width=True)
+            
+            # Afficher le nombre total de données
+            st.write(f"**Total des données scrapées : {len(st.session_state.scraped_data)} lignes**")
             
             # Bouton de téléchargement
             csv_link = download_csv(st.session_state.scraped_data, "donnees_scrapees")
@@ -358,7 +248,7 @@ def show_scraping():
 
 # Page de téléchargement
 def show_download():
-    st.markdown("<h2>📥 Téléchargement de Données</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>Téléchargement de Données</h2>", unsafe_allow_html=True)
     
     st.markdown("""
     <div class="feature-card">
@@ -366,40 +256,8 @@ def show_download():
     </div>
     """, unsafe_allow_html=True)
     
-    # Liste des fichiers disponibles
-    available_files = [
-        ('motos_scooters1.csv', 'Motocycles - Lot 1'),
-        ('motos_scooters2.csv', 'Motocycles - Lot 2'),
-        ('motos_scooters3.csv', 'Motocycles - Lot 3'),
-        ('motos_scooters4.csv', 'Motocycles - Lot 4'),
-        ('motos_scooters5.csv', 'Motocycles - Lot 5')
-    ]
-    
     st.subheader("Fichiers Disponibles")
     
-    for filename, description in available_files:
-        try:
-            df = pd.read_csv(f'data/{filename}')
-            
-            col1, col2, col3, col4 = st.columns([3, 2, 2, 2])
-            
-            with col1:
-                st.write(f"**{description}**")
-            
-            with col2:
-                st.write(f"📊 {df.shape[0]} lignes")
-            
-            with col3:
-                st.write(f"📋 {df.shape[1]} colonnes")
-            
-            with col4:
-                csv_link = download_csv(df, filename.replace('.csv', ''))
-                st.markdown(csv_link, unsafe_allow_html=True)
-            
-            st.divider()
-            
-        except FileNotFoundError:
-            st.warning(f"Fichier {filename} non trouvé.")
 
 # Page dashboard
 def show_dashboard():
@@ -410,33 +268,6 @@ def show_dashboard():
         <p>Visualisez et analysez vos données avec des graphiques interactifs et des métriques clés.</p>
     </div>
     """, unsafe_allow_html=True)
-    
-    # Sélection des données à analyser
-    data_source = st.radio(
-        "Choisissez la source de données :",
-        ["Données scrapées récemment", "Données stockées"]
-    )
-    
-    if data_source == "Données scrapées récemment":
-        if st.session_state.scraped_data:
-            create_dashboard(st.session_state.scraped_data)
-        else:
-            st.info("Aucune donnée scrapée récemment. Allez dans l'onglet Scraping pour collecter des données.")
-    else:
-        # Charger et combiner toutes les données stockées
-        all_data = []
-        for i in range(1, 6):
-            try:
-                df = pd.read_csv(f'data/motos_scooters{i}.csv')
-                all_data.append(df)
-            except FileNotFoundError:
-                continue
-        
-        if all_data:
-            combined_df = pd.concat(all_data, ignore_index=True)
-            create_dashboard(combined_df)
-        else:
-            st.warning("Aucune donnée stockée trouvée.")
 
 # Page formulaire d'évaluation
 def show_feedback():
@@ -465,8 +296,8 @@ def show_feedback():
 def main():
     # Sidebar pour la navigation
     st.sidebar.markdown("""
-    <div style="text-align: center; padding: 1rem;">
-        <h3>🚗 Navigation</h3>
+    <div style="text-align: left; padding: 1rem; text-transform: uppercase;">
+        <h3>Navigation</h3>
     </div>
     """, unsafe_allow_html=True)
     
