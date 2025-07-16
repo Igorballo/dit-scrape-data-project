@@ -34,7 +34,7 @@ st.markdown("""
     
     .feature-card {
         background: white;
-        padding: 1.5rem;
+        padding: 1.3rem;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         margin: 1rem 0;
@@ -168,9 +168,9 @@ def show_home():
     st.markdown("""
     <div class="feature-card">
         <h3>🎯 Notre Mission</h3>
-        <p>Cette plateforme vous permet de collecter, analyser et télécharger des données automobiles 
+        <span>Cette plateforme vous permet de collecter, analyser et télécharger des données automobiles 
         depuis Expat-Dakar de manière simple et efficace. Que vous soyez un particulier cherchant 
-        une moto ou un analyste de données, notre outil vous accompagne dans votre démarche.</p>
+        une moto ou un analyste de données, notre outil vous accompagne dans votre démarche.</span>
     </div>
     """, unsafe_allow_html=True)
     
@@ -180,7 +180,7 @@ def show_home():
         st.markdown("""
         <div class="feature-card">
             <h4>🕷️ Scraping Intelligent</h4>
-            <p>Collectez automatiquement les données de plusieurs pages avec notre outil de scraping avancé.</p>
+            <span>Collectez automatiquement les données de plusieurs pages avec notre outil de scraping avancé.</span>
         </div>
         """, unsafe_allow_html=True)
     
@@ -188,7 +188,7 @@ def show_home():
         st.markdown("""
         <div class="feature-card">
             <h4>📊 Dashboard Analytique</h4>
-            <p>Visualisez vos données avec des graphiques interactifs et des métriques clés.</p>
+            <span>Visualisez vos données avec des graphiques interactifs et des métriques clés.</span>
         </div>
         """, unsafe_allow_html=True)
     
@@ -196,7 +196,7 @@ def show_home():
         st.markdown("""
         <div class="feature-card">
             <h4>📥 Téléchargement Facile</h4>
-            <p>Téléchargez vos données au format CSV pour une utilisation ultérieure.</p>
+            <span>Téléchargez vos données au format CSV pour une utilisation ultérieure.</span>
         </div>
         """, unsafe_allow_html=True)
 
@@ -206,7 +206,7 @@ def show_scraping():
     
     st.markdown("""
     <div class="feature-card">
-        <p>Configurez vos paramètres de scraping et lancez la collecte de données depuis Expat-Dakar.</p>
+        <span>Configurez vos paramètres de scraping et lancez la collecte de données depuis Expat-Dakar.</span>
     </div>
     """, unsafe_allow_html=True)
     
@@ -248,15 +248,46 @@ def show_scraping():
 
 # Page de téléchargement
 def show_download():
-    st.markdown("<h2>Téléchargement de Données</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>📥 Téléchargement de Données</h2>", unsafe_allow_html=True)
     
     st.markdown("""
     <div class="feature-card">
-        <p>Téléchargez les données déjà scrapées et stockées dans notre base de données.</p>
+        <span>Téléchargez les données déjà scrapées et stockées dans notre base de données.</span>
     </div>
     """, unsafe_allow_html=True)
     
+    # Liste des fichiers disponibles
+    available_files = [
+        ('dakar-location-voitures-sitemap.csv', 'https://dakar-auto.com/senegal/location-de-voitures-19'),
+        ('motos-scooters-sitemap.csv', 'https://dakar-auto.com/senegal/motos-and-scooters-3'),
+        ('dakar-voiture-2753-sitemap.csv', 'https://dakar-auto.com/senegal/voitures-4'),
+    ]
+    
     st.subheader("Fichiers Disponibles")
+    
+    for filename, description in available_files:
+        try:
+            df = pd.read_csv(f'data/{filename}')
+            
+            col1, col2, col3, col4 = st.columns([3, 2, 2, 2])
+            
+            with col1:
+                st.write(f"**{description}**")
+            
+            with col2:
+                st.write(f"📊 {df.shape[0]} lignes")
+            
+            with col3:
+                st.write(f"📋 {df.shape[1]} colonnes")
+            
+            with col4:
+                csv_link = download_csv(df, filename.replace('.csv', ''))
+                st.markdown(csv_link, unsafe_allow_html=True)
+            
+            st.divider()
+            
+        except FileNotFoundError:
+            st.warning(f"Fichier {filename} non trouvé.")
     
 
 # Page dashboard
@@ -265,7 +296,7 @@ def show_dashboard():
     
     st.markdown("""
     <div class="feature-card">
-        <p>Visualisez et analysez vos données avec des graphiques interactifs et des métriques clés.</p>
+        <span>Visualisez et analysez vos données avec des graphiques interactifs et des métriques clés.</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -275,8 +306,8 @@ def show_feedback():
     
     st.markdown("""
     <div class="feature-card">
-        <p>Aidez-nous à améliorer notre plateforme en partageant votre expérience utilisateur. 
-        Utilisez le formulaire ci-dessous pour nous donner votre avis.</p>
+        <span>Aidez-nous à améliorer notre plateforme en partageant votre expérience utilisateur. 
+        Utilisez le formulaire ci-dessous pour nous donner votre avis.</span>
     </div>
     """, unsafe_allow_html=True)
     
