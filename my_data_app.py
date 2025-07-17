@@ -1,10 +1,7 @@
 import streamlit as st
 import pandas as pd
-import requests
-from bs4 import BeautifulSoup
-import time
+import numpy as np
 import base64
-import io
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
@@ -95,66 +92,42 @@ def clean_data(dataframe):
     
     # Copie des données
     df_clean = dataframe.copy()
+
+    # Nettoyer le prix
+    df_clean["prix_numerique"] = df_clean["prix"].str.replace(r"[^\d]", "", regex=True)
+    df_clean["prix_numerique"] = pd.to_numeric(df_clean["prix_numerique"], errors='coerce')
+
+    # Nettoyer l'année
+    df_clean["annee_numerique"] = df_clean["annee"].str.extract(r"(\d{4})")
+    df_clean["annee_numerique"] = pd.to_numeric(df_clean["annee_numerique"], errors='coerce')
+
+    # Nettoyer le kilométrage
+    df_clean["kilometrage_numerique"] = df_clean["kilometrage"].str.replace(r"[^\d-]", "", regex=True)
+    df_clean["kilometrage_numerique"] = pd.to_numeric(df_clean["kilometrage_numerique"], errors='coerce')
     
-    # Nettoyage des prix (suppression de 'FCFA' et conversion en numérique)
-    df_clean['Prix_Numerique'] = df_clean['Prix'].str.replace(' FCFA', '').str.replace(' ', '').astype(float)
+    # Traitement des valeurs négatives
+    df_clean.loc[df_clean["kilometrage_numerique"] < 0, "kilometrage_numerique"] = np.nan
+
+    # Extraire marque et modèle depuis containers_links
+    df_clean[["marque_extract", "modele_extract", "annee_extract"]] = df_clean["containers_links"].str.extract(r"^(\w+)\s+(.+?)\s+(\d{4})")
+    df_clean["annee_extract"] = pd.to_numeric(df_clean["annee_extract"], errors='coerce')
     
-    # Nettoyage du kilométrage
-    df_clean['Kilometrage_Numerique'] = df_clean['Kilométrage'].str.replace(' km', '').str.replace(' ', '').astype(float)
+    # Extraire marque depuis marque (plus complet)
+    df_clean[["marque_complete", "modele_complete", "annee_complete"]] = df_clean["marque"].str.extract(r"^(\w+)\s+(.+?)\s+(\d{4})")
+    df_clean["annee_complete"] = pd.to_numeric(df_clean["annee_complete"], errors='coerce')
     
-    # Conversion de l'année en numérique
-    df_clean['Annee_Numerique'] = df_clean['Année'].astype(int)
+    # Nettoyer l'adresse
+    df_clean["adresse_clean"] = df_clean["adresse"].str.replace(r'\s+', ' ', regex=True).str.strip()
+    
+    # Nettoyer le nom du propriétaire
+    df_clean["proprietaire_clean"] = df_clean["proprietaire"].str.strip()
+    
+    # Création de colonnes calculées
+    df_clean["age_voiture"] = 2024 - df_clean["annee_numerique"]
+    df_clean["prix_par_km"] = df_clean["prix_numerique"] / df_clean["kilometrage_numerique"]
     
     return df_clean
 
-# Fonction pour créer des visualisations
-def create_dashboard(dataframe):
-    """Création du dashboard avec des graphiques"""
-    if dataframe.empty:
-        st.warning("Aucune donnée à afficher dans le dashboard.")
-        return
-    
-    # Nettoyage des données pour le dashboard
-    df_clean = clean_data(dataframe)
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("Nombre total", len(dataframe))
-    
-    with col2:
-        avg_price = df_clean['Prix_Numerique'].mean()
-        st.metric("Prix moyen", f"{avg_price:,.0f} FCFA")
-    
-    with col3:
-        avg_year = df_clean['Annee_Numerique'].mean()
-        st.metric("Année moyenne", f"{avg_year:.0f}")
-    
-    with col4:
-        avg_km = df_clean['Kilometrage_Numerique'].mean()
-        st.metric("Km moyen", f"{avg_km:,.0f} km")
-    
-    # Graphiques
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Distribution des prix
-        fig_price = px.histogram(df_clean, x='Prix_Numerique', 
-                               title='Distribution des Prix',
-                               labels={'Prix_Numerique': 'Prix (FCFA)', 'count': 'Nombre'})
-        st.plotly_chart(fig_price, use_container_width=True)
-    
-    with col2:
-        # Distribution des années
-        fig_year = px.bar(df_clean['Annee_Numerique'].value_counts().reset_index(),
-                         x='index', y='Annee_Numerique',
-                         title='Distribution par Année',
-                         labels={'index': 'Année', 'Annee_Numerique': 'Nombre'})
-        st.plotly_chart(fig_year, use_container_width=True)
-    
-    # Graphique des marques
-    fig_brand = px.pie(df_clean, names='Marque', title='Répartition par Marque')
-    st.plotly_chart(fig_brand, use_container_width=True)
 
 # Page d'accueil
 def show_home():
@@ -238,7 +211,7 @@ def show_scraping():
             st.dataframe(st.session_state.scraped_data, use_container_width=True)
             
             # Afficher le nombre total de données
-            st.write(f"**Total des données scrapées : {len(st.session_state.scraped_data)} lignes**")
+            st.write(f"**Total des données scrapées : {len(st.session_state.scraped_data)} lignes et {len(st.session_state.scraped_data.columns)} colonnes**")
             
             # Bouton de téléchargement
             csv_link = download_csv(st.session_state.scraped_data, "donnees_scrapees")
@@ -269,7 +242,7 @@ def show_download():
         try:
             df = pd.read_csv(f'data/{filename}')
             
-            col1, col2, col3, col4 = st.columns([3, 2, 2, 2])
+            col1, col2, col3, col4 = st.columns([3, 1, 1, 2])
             
             with col1:
                 st.write(f"**{description}**")
@@ -281,7 +254,7 @@ def show_download():
                 st.write(f"📋 {df.shape[1]} colonnes")
             
             with col4:
-                csv_link = download_csv(df, filename.replace('.csv', ''))
+                csv_link = download_csv(df, filename)
                 st.markdown(csv_link, unsafe_allow_html=True)
             
             st.divider()
@@ -299,6 +272,79 @@ def show_dashboard():
         <span>Visualisez et analysez vos données avec des graphiques interactifs et des métriques clés.</span>
     </div>
     """, unsafe_allow_html=True)
+
+    try:
+        # Charger le CSV
+        df = pd.read_csv("data/data_to_analyse.csv")
+        
+        # Nettoyage des données pour le dashboard
+        df_clean = clean_data(df)
+        
+        # Supprimer les lignes avec des données manquantes pour les métriques
+        df_metrics = df_clean.dropna(subset=['prix_numerique', 'annee_numerique', 'kilometrage_numerique'])
+        
+        if df_metrics.empty:
+            st.warning("Aucune donnée valide à afficher dans le dashboard.")
+            return
+        
+        # Métriques principales
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("Nombre total", len(df_metrics))
+        
+        with col2:
+            avg_price = df_metrics['prix_numerique'].mean()
+            st.metric("Prix moyen", f"{avg_price:,.0f} FCFA")
+          
+        with col3:
+            avg_km = df_metrics['kilometrage_numerique'].mean()
+            st.metric("Km moyen", f"{avg_km:,.0f} km")
+        
+        st.markdown("---")
+        
+        # Graphiques
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Distribution des carburants
+            carburant_counts = df_metrics['carburant'].value_counts()
+            fig_carburant = px.pie(values=carburant_counts.values, names=carburant_counts.index,
+                                  title='Répartition par Type de Carburant')
+            st.plotly_chart(fig_carburant, use_container_width=True)
+        
+        with col2:
+            # Distribution des années
+            year_counts = df_metrics['annee_numerique'].value_counts().sort_index()
+            fig_year = px.bar(x=year_counts.index, y=year_counts.values,
+                             title='Distribution par Année',
+                             labels={'x': 'Année', 'y': 'Nombre de voitures'})
+            st.plotly_chart(fig_year, use_container_width=True)
+        
+        # Deuxième ligne de graphiques
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Prix vs Kilométrage
+            fig_scatter = px.scatter(df_metrics, x='kilometrage_numerique', y='prix_numerique',
+                                    title='Relation Prix vs Kilométrage',
+                                    labels={'kilometrage_numerique': 'Kilométrage (km)', 'prix_numerique': 'Prix (FCFA)'})
+            st.plotly_chart(fig_scatter, use_container_width=True)
+        
+        with col2:
+            # Distribution des boîtes de vitesse
+            boite_counts = df_metrics['boite_vitesse'].value_counts()
+            fig_boite = px.pie(values=boite_counts.values, names=boite_counts.index,
+                              title='Répartition par Type de Boîte de Vitesse')
+            st.plotly_chart(fig_boite, use_container_width=True)
+        
+    
+    except FileNotFoundError:
+        st.error("Fichier 'data/data_to_analyse.csv' non trouvé. Veuillez d'abord scraper des données.")
+    except Exception as e:
+        st.error(f"Erreur lors du chargement du dashboard: {str(e)}")
+        st.info("Assurez-vous que le fichier CSV contient les colonnes attendues.")
+
 
 # Page formulaire d'évaluation
 def show_feedback():

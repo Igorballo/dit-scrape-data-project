@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import time
-from datetime import datetime
 from selenium import webdriver 
 from selenium.webdriver.common.by import By 
 import re
@@ -81,11 +79,6 @@ def scrape_voitures_data(max_pages):
     df = pd.DataFrame(data)
     print(df)
     return df
-
-
-
-
-
 
 
 def scrape_motos_data(max_pages):
