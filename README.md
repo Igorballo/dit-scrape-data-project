@@ -12,8 +12,6 @@ Une application Streamlit moderne pour la collecte, l'analyse et le télécharge
 ### 🕷️ Scraping de Données
 - Configuration flexible des paramètres de scraping
 - Support multi-pages
-- Barre de progression en temps réel
-- Gestion d'erreurs robuste
 
 ### 📥 Téléchargement
 - Accès aux données déjà scrapées

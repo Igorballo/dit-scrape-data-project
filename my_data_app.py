@@ -140,7 +140,7 @@ def show_home():
         <h3>🎯 Notre Mission</h3>
         <span>Cette plateforme vous permet de collecter, analyser et télécharger des données automobiles 
         depuis Expat-Dakar de manière simple et efficace. Que vous soyez un particulier cherchant 
-        une moto ou un analyste de données, notre outil vous accompagne dans votre démarche.</span>
+        une moto ou un analyste de données, cette plateforme vous accompagne dans votre démarche.</span>
     </div>
     """, unsafe_allow_html=True)
     
@@ -357,7 +357,7 @@ def show_feedback():
     # Intégration du formulaire KoboToolbox
     st.markdown("""
     <div style="display: flex; justify-content: center; margin: 2rem 0;">
-        <iframe src="https://ee.kobotoolbox.org/i/kXR3jNKQ" 
+        <iframe src="https://ee.kobotoolbox.org/i/ei4b3hxS" 
                 width="100%" 
                 height="700" 
                 frameborder="0" 
