@@ -49,7 +49,7 @@ pip install -r requirements.txt
 
 3. **Lancer l'application**
 ```bash
-streamlit run scraper_app.py
+streamlit run my_data_app.py
 ```
 
 4. **Accéder à l'application**
@@ -82,7 +82,7 @@ Le code est organisé en fonctions modulaires pour faciliter la maintenance :
 
 2. **Déployer sur Streamlit Cloud**
    - Connectez votre repository GitHub à Streamlit Cloud
-   - Configurez le chemin vers `scraper_app.py`
+   - Configurez le chemin vers `my_data_app.py`
    - Déployez l'application
 
 
