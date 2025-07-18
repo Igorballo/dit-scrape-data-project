@@ -224,18 +224,37 @@ def show_download():
         try:
             df = pd.read_csv(f'data/{filename}')
             
-            col1, col2, col3, col4 = st.columns([3, 1, 1, 2])
-            
-            with col1:
-                st.write(f"**{description}**")
-            
-            with col2:
-                st.write(f"📊 {df.shape[0]} lignes")
-            
-            with col3:
-                st.write(f"📋 {df.shape[1]} colonnes")
-            
-            with col4:
+            # Créer un expander pour chaque fichier
+            with st.expander(f"📁 {description} ({df.shape[0]} lignes, {df.shape[1]} colonnes)", expanded=False):
+                
+                # Afficher les informations du fichier
+                col1, col2, col3 = st.columns([1, 1, 1])
+                
+                with col1:
+                    st.metric("Lignes", df.shape[0])
+                
+                with col2:
+                    st.metric("Colonnes", df.shape[1])
+                
+                with col3:
+                    st.metric("Taille", f"{df.memory_usage(deep=True).sum() / 1024:.1f} KB")
+                
+                # Afficher un aperçu des données
+                st.subheader("👀 Aperçu des données")
+                st.dataframe(df, use_container_width=True)
+                
+                # Afficher les informations sur les colonnes
+                st.subheader("📋 Informations sur les colonnes")
+                col_info = pd.DataFrame({
+                    'Colonne': df.columns,
+                    'Type': df.dtypes,
+                    'Valeurs uniques': [df[col].nunique() for col in df.columns],
+                    'Valeurs manquantes': df.isnull().sum()
+                })
+                st.dataframe(col_info, use_container_width=True)
+                
+                # Bouton de téléchargement
+                st.subheader("📥 Téléchargement")
                 csv_link = download_csv(df, filename)
                 st.markdown(csv_link, unsafe_allow_html=True)
             
