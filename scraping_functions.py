@@ -40,8 +40,8 @@ def scrape_voitures_data(max_pages):
                     publie_par = auteur_elem.text.strip() if auteur_elem else None
                     proprietaire = publie_par[4:] if publie_par else None
 
-                    attributes = container.select('.listing-card__attribute')
                     kilometrage = type_boite = carburant = None
+                    attributes = container.select('.listing-card__attribute')
 
                     for attr in attributes:
                         text = attr.text.strip()

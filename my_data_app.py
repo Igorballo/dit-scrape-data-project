@@ -91,7 +91,6 @@ def clean_data(dataframe):
     # Je veux drop certaine colonne ici
     df_clean.drop(columns=['web-scraper-order', 'web-scraper-start-url', 'containers_links','containers_links-href'], inplace=True)
 
-    print("igor",df_clean)
 
     # Nettoyer le prix
     df_clean["prix_numerique"] = df_clean["prix"].str.replace(r"[^\d]", "", regex=True)
@@ -386,6 +385,7 @@ def main():
         <p>Plateforme de scraping et d'analyse de données automobiles.</p>
         <p><strong>Version:</strong> 1.0</p>
         <p><strong>Source:</strong> Expat-Dakar</p>
+        <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/igor-ballo-94a9ab23a/" target="_blank">Mon profil</a></p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -403,9 +403,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
 
  
 
