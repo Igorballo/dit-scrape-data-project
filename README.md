@@ -24,11 +24,9 @@ Une application Streamlit moderne pour la collecte, l'analyse et le télécharge
 - Visualisations interactives avec Plotly
 - Métriques clés (prix moyen, année moyenne, etc.)
 - Graphiques de distribution et de répartition
-- Support des données scrapées récemment et stockées
 
 ### 📝 Formulaire d'Évaluation
 - Évaluation globale de l'application
-- Notation par fonctionnalité
 - Commentaires et suggestions
 - Sauvegarde des retours utilisateur
 
@@ -42,8 +40,8 @@ Une application Streamlit moderne pour la collecte, l'analyse et le télécharge
 
 1. **Cloner ou télécharger le projet**
 ```bash
-git clone <votre-repo>
-cd examen-data-collection
+git clone git@github.com:Igorballo/dit-scrape-data-project.git
+cd dit-scrape-data-project
 ```
 
 2. **Installer les dépendances**
@@ -92,53 +90,6 @@ Le code est organisé en fonctions modulaires pour faciliter la maintenance :
 - **`create_dashboard()`** : Création des visualisations
 - **`download_csv()`** : Génération des liens de téléchargement
 
-## 🎨 Interface Utilisateur
-
-### Design Moderne
-- Interface responsive avec CSS personnalisé
-- Navigation par sidebar intuitive
-- Cartes d'information stylisées
-- Boutons avec effets de survol
-
-### Expérience Utilisateur
-- Navigation fluide entre les pages
-- Feedback visuel pour toutes les actions
-- Barres de progression pour les opérations longues
-- Messages d'erreur et de succès clairs
-
-## 🔧 Personnalisation
-
-### Modifier le Scraping
-Pour adapter le scraping à vos besoins, modifiez la fonction `scrape_motos_data()` :
-
-```python
-def scrape_motos_data(url, max_pages=5):
-    # Remplacez la simulation par votre logique de scraping réelle
-    # Utilisez requests et BeautifulSoup pour scraper le site
-    pass
-```
-
-### Ajouter de Nouvelles Visualisations
-Dans la fonction `create_dashboard()`, ajoutez vos graphiques :
-
-```python
-# Exemple d'ajout d'un nouveau graphique
-fig_new = px.scatter(df_clean, x='Prix_Numerique', y='Kilometrage_Numerique')
-st.plotly_chart(fig_new, use_container_width=True)
-```
-
-### Personnaliser le Style
-Modifiez la section CSS dans le code pour changer l'apparence :
-
-```python
-st.markdown("""
-<style>
-    .main-header {
-        /* Vos styles personnalisés */
-    }
-</style>
-""", unsafe_allow_html=True)
-```
 
 ## 📊 Déploiement sur Streamlit Cloud
 
@@ -151,27 +102,6 @@ st.markdown("""
    - Configurez le chemin vers `my_data_app.py`
    - Déployez l'application
 
-3. **Configuration avancée**
-   - Ajoutez des variables d'environnement si nécessaire
-   - Configurez les permissions d'accès aux données
-
-## 🐛 Dépannage
-
-### Problèmes Courants
-
-**Erreur de dépendances :**
-```bash
-pip install --upgrade -r requirements.txt
-```
-
-**Problème de port :**
-```bash
-streamlit run my_data_app.py --server.port 8502
-```
-
-**Fichiers de données manquants :**
-- Vérifiez que le dossier `data/` existe
-- Assurez-vous que les fichiers CSV sont présents
 
 ## 🤝 Contribution
 

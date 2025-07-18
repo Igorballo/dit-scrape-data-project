@@ -5,4 +5,6 @@ streamlit
 seaborn
 pybase64
 plotly
+requests
+beautifulsoup4
 
