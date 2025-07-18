@@ -57,21 +57,6 @@ streamlit run my_data_app.py
 4. **Accéder à l'application**
 Ouvrez votre navigateur et allez sur `http://localhost:8501`
 
-## 📁 Structure du Projet
-
-```
-examen-data-collection/
-├── my_data_app.py          # Application principale
-├── requirements.txt         # Dépendances Python
-├── README.md              # Documentation
-└── data/                  # Données scrapées
-    ├── motos_scooters1.csv
-    ├── motos_scooters2.csv
-    ├── motos_scooters3.csv
-    ├── motos_scooters4.csv
-    └── motos_scooters5.csv
-```
-
 ## 🛠️ Architecture du Code
 
 ### Structure Modulaire

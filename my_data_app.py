@@ -49,7 +49,7 @@ st.markdown("""
         color: white;
         border: none;
         border-radius: 25px;
-        padding: 0.75rem 2rem;
+        padding: 0.75rem 1.5rem;
         font-weight: bold;
         transition: all 0.3s ease;
     }
@@ -130,7 +130,7 @@ def clean_data(dataframe):
 def show_home():
     st.markdown("""
     <div class="main-header">
-        <h1>🚗 Plateforme de Scraping - Expat Dakar</h1>
+        <h1>Plateforme de Scraping - Expat Dakar</h1>
         <p>Votre solution complète pour la collecte et l'analyse de données automobiles</p>
     </div>
     """, unsafe_allow_html=True)
@@ -157,7 +157,7 @@ def show_home():
     with col2:
         st.markdown("""
         <div class="feature-card">
-            <h4>📊 Dashboard Analytique</h4>
+            <h4>📊 Dashboard</h4>
             <span>Visualisez vos données avec des graphiques interactifs et des métriques clés.</span>
         </div>
         """, unsafe_allow_html=True)
