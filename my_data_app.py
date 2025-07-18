@@ -8,7 +8,7 @@ from scraping_functions import scrape_motos_data, scrape_voitures_data, scrape_l
 
 # Configuration de la page
 st.set_page_config(
-    page_title="Plateforme de Scraping - Expat Dakar",
+    page_title="Plateforme de Scraping - AutoScraper",
     page_icon="🚗",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -115,7 +115,7 @@ def clean_data(dataframe):
 def show_home():
     st.markdown("""
     <div class="main-header">
-        <h1>Plateforme de Scraping - Expat Dakar</h1>
+        <h1>Plateforme de Scraping - <span style="color: #fff; font-style: italic;">AutoScraper</span></h1>
         <p>Votre solution complète pour la collecte et l'analyse de données automobiles</p>
     </div>
     """, unsafe_allow_html=True)
@@ -124,7 +124,7 @@ def show_home():
     <div class="feature-card">
         <h3>🎯 Notre Mission</h3>
         <span>Cette plateforme vous permet de collecter, analyser et télécharger des données automobiles 
-        depuis Expat-Dakar de manière simple et efficace. Que vous soyez un particulier cherchant 
+        depuis AutoScraper de manière simple et efficace. Que vous soyez un particulier cherchant 
         une moto ou un analyste de données, cette plateforme vous accompagne dans votre démarche.</span>
     </div>
     """, unsafe_allow_html=True)
@@ -161,7 +161,7 @@ def show_scraping():
     
     st.markdown("""
     <div class="feature-card">
-        <span>Configurez vos paramètres de scraping et lancez la collecte de données depuis Expat-Dakar.</span>
+        <span>Configurez vos paramètres de scraping et lancez la collecte de données depuis AutoScraper.</span>
     </div>
     """, unsafe_allow_html=True)
     
@@ -380,11 +380,11 @@ def main():
     
     # Informations sur l'application
     st.sidebar.markdown("""
-    <div style="padding: 1rem;">
+    <div style="">
         <h4>ℹ️ À propos</h4>
         <p>Plateforme de scraping et d'analyse de données automobiles.</p>
         <p><strong>Version:</strong> 1.0</p>
-        <p><strong>Source:</strong> Expat-Dakar</p>
+        <p><strong>Source:</strong> AutoScraper</p>
         <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/igor-ballo-94a9ab23a/" target="_blank">Mon profil</a></p>
     </div>
     """, unsafe_allow_html=True)

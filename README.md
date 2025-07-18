@@ -1,6 +1,6 @@
-# 🚗 Plateforme de Scraping - Expat Dakar
+# 🚗 Plateforme de Scraping - AutoScrape Dakar
 
-Une application Streamlit moderne pour la collecte, l'analyse et le téléchargement de données automobiles depuis Expat-Dakar.
+Une application Streamlit moderne pour la collecte, l'analyse et le téléchargement de données automobiles depuis AutoScraper.
 
 ## 🎯 Fonctionnalités
 
