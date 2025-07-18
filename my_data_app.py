@@ -1,15 +1,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import requests
-from bs4 import BeautifulSoup
-import time
 import base64
-import io
 import plotly.express as px
-import plotly.graph_objects as go
-from datetime import datetime
-import json
 from scraping_functions import scrape_motos_data, scrape_voitures_data, scrape_location_data
 
 
