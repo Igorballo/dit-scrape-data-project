@@ -79,8 +79,6 @@ def download_csv(dataframe, filename):
     return href
 
 
-
-
 # Fonction pour nettoyer les données
 def clean_data(dataframe):
     """Fonction pour nettoyer les données scrapées"""
@@ -89,6 +87,11 @@ def clean_data(dataframe):
     
     # Copie des données
     df_clean = dataframe.copy()
+
+    # Je veux drop certaine colonne ici
+    df_clean.drop(columns=['web-scraper-order', 'web-scraper-start-url', 'containers_links','containers_links-href'], inplace=True)
+
+    print("igor",df_clean)
 
     # Nettoyer le prix
     df_clean["prix_numerique"] = df_clean["prix"].str.replace(r"[^\d]", "", regex=True)
@@ -104,25 +107,8 @@ def clean_data(dataframe):
     
     # Traitement des valeurs négatives
     df_clean.loc[df_clean["kilometrage_numerique"] < 0, "kilometrage_numerique"] = np.nan
+    
 
-    # Extraire marque et modèle depuis containers_links
-    df_clean[["marque_extract", "modele_extract", "annee_extract"]] = df_clean["containers_links"].str.extract(r"^(\w+)\s+(.+?)\s+(\d{4})")
-    df_clean["annee_extract"] = pd.to_numeric(df_clean["annee_extract"], errors='coerce')
-    
-    # Extraire marque depuis marque (plus complet)
-    df_clean[["marque_complete", "modele_complete", "annee_complete"]] = df_clean["marque"].str.extract(r"^(\w+)\s+(.+?)\s+(\d{4})")
-    df_clean["annee_complete"] = pd.to_numeric(df_clean["annee_complete"], errors='coerce')
-    
-    # Nettoyer l'adresse
-    df_clean["adresse_clean"] = df_clean["adresse"].str.replace(r'\s+', ' ', regex=True).str.strip()
-    
-    # Nettoyer le nom du propriétaire
-    df_clean["proprietaire_clean"] = df_clean["proprietaire"].str.strip()
-    
-    # Création de colonnes calculées
-    df_clean["age_voiture"] = 2024 - df_clean["annee_numerique"]
-    df_clean["prix_par_km"] = df_clean["prix_numerique"] / df_clean["kilometrage_numerique"]
-    
     return df_clean
 
 
