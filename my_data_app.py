@@ -236,8 +236,22 @@ def show_scraping():
                     "V5": "Propriétaire"
                 }
 
-            mapping_df = pd.DataFrame(list(col_mapping.items()), columns=["Colonne", "Description"])
-            st.table(mapping_df)
+            st.markdown("""
+            <ul style="list-style: none; padding-left: 0;">
+            """, unsafe_allow_html=True)
+
+            for col, desc in col_mapping.items():
+                st.markdown(
+                    f"""
+                    <li style="margin-bottom: 0.7rem;">
+                        <span style="display: inline-block; background: #667eea; color: white; border-radius: 6px; padding: 0.3rem 0.8rem; font-weight: bold; margin-right: 0.7rem;">{col}</span>
+                        <span style="font-size: 1.08rem;">{desc}</span>
+                    </li>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            st.markdown("</ul>", unsafe_allow_html=True)
 
         else:
             st.info("Aucune donnée scrapée pour le moment. Lancez le scraping pour commencer.")
@@ -464,6 +478,5 @@ def main():
 if __name__ == "__main__":
     main()
 
- 
 
 
