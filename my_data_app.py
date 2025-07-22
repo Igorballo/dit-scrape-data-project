@@ -189,6 +189,8 @@ def show_scraping():
     with col2:
         st.subheader("Données Scrapées")
         if hasattr(st.session_state, 'scraped_data') and not st.session_state.scraped_data.empty:
+            
+
             # Afficher toutes les données sans limite
             st.dataframe(st.session_state.scraped_data, use_container_width=True)
             
@@ -198,6 +200,45 @@ def show_scraping():
             # Bouton de téléchargement
             csv_link = download_csv(st.session_state.scraped_data, "donnees_scrapees")
             st.markdown(csv_link, unsafe_allow_html=True)
+
+             # Affichage de la correspondance sous forme de tableau
+            
+            st.markdown("#### 🗂️ Description des colonnes")
+            if(url == 'https://dakar-auto.com/senegal/voitures-4'):
+                # Dictionnaire de correspondance
+                col_mapping = {
+                    "V1": "Marque",
+                    "V2": "Année",
+                    "V3": "Prix",
+                    "V4": "Adresse",
+                    "V5": "Kilométrage",
+                    "V6": "Boite de vitesse",
+                    "V7": "Carburant",
+                    "V8": "Propriétaire"
+                }
+            
+            elif(url == 'https://dakar-auto.com/senegal/motos-and-scooters-3'):
+                col_mapping = {
+                   "V1": "Marque",
+                    "V2": "Année",
+                    "V3": "Prix",
+                    "V4": "Adresse",
+                    "V5": "Kilométrage",
+                    "V6": "Propriétaire"
+                }
+                
+            elif(url == 'https://dakar-auto.com/senegal/location-de-voitures-19'):
+                col_mapping = {
+                    "V1": "Marque",
+                    "V2": "Année",
+                    "V3": "Prix",
+                    "V4": "Adresse",
+                    "V5": "Propriétaire"
+                }
+
+            mapping_df = pd.DataFrame(list(col_mapping.items()), columns=["Colonne", "Description"])
+            st.table(mapping_df)
+
         else:
             st.info("Aucune donnée scrapée pour le moment. Lancez le scraping pour commencer.")
 
